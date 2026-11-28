@@ -4,6 +4,7 @@ import com.example.todolist.domain.Task;
 import com.example.todolist.dto.TaskRequestDTO;
 import com.example.todolist.dto.TaskResponseDTO;
 import com.example.todolist.exception.ResourceNotFoundException;
+import com.example.todolist.mapper.TaskMapper;
 import com.example.todolist.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,30 +15,32 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
     }
 
     @Transactional
     public TaskResponseDTO createTask(TaskRequestDTO dto) {
         Task task = new Task(dto.getTitle(), dto.getDescription());
         Task saved = taskRepository.save(task);
-        return TaskResponseDTO.from(saved);
+        return taskMapper.toResponse(saved);
     }
 
     @Transactional(readOnly = true)
     public List<TaskResponseDTO> getAllTasks() {
         return taskRepository.findAll()
                 .stream()
-                .map(TaskResponseDTO::from)
+                .map(taskMapper::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public TaskResponseDTO getTaskById(Long id) {
         Task task = findTaskOrThrow(id);
-        return TaskResponseDTO.from(task);
+        return taskMapper.toResponse(task);
     }
 
     @Transactional
@@ -45,7 +48,7 @@ public class TaskService {
         Task task = findTaskOrThrow(id);
         task.setTitle(dto.getTitle());
         task.setDescription(dto.getDescription());
-        return TaskResponseDTO.from(task);
+        return taskMapper.toResponse(task);
     }
 
     @Transactional

@@ -24,20 +24,6 @@ public class TaskResponseDTO {
         this.createdAt = createdAt;
     }
 
-    /**
-     * Статический фабричный метод для преобразования Entity -> DTO.
-     * Держим маппинг в DTO, чтобы не засорять сервисный слой.
-     */
-    public static TaskResponseDTO from(Task task) {
-        return new TaskResponseDTO(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.isCompleted(),
-                task.getCreatedAt()
-        );
-    }
-
     public Long getId() {
         return id;
     }
