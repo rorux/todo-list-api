@@ -6,10 +6,10 @@ import com.example.todolist.dto.TaskResponseDTO;
 import com.example.todolist.exception.ResourceNotFoundException;
 import com.example.todolist.mapper.TaskMapper;
 import com.example.todolist.repository.TaskRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class TaskService {
@@ -30,11 +30,9 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public List<TaskResponseDTO> getAllTasks() {
-        return taskRepository.findAll()
-                .stream()
-                .map(taskMapper::toResponse)
-                .toList();
+    public Page<TaskResponseDTO> getAllTasks(Pageable pageable) {
+        return taskRepository.findAll(pageable)
+                .map(taskMapper::toResponse);
     }
 
     @Transactional(readOnly = true)
